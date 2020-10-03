@@ -27,6 +27,7 @@ Encore
      */
     .addEntry('app', './assets/app.js')
     .addEntry('update_farm', './assets/update_farm.js')
+    .addEntry('index', './assets/index.js')
     //.addEntry('page1', './assets/page1.js')
     //.addEntry('page2', './assets/page2.js')
 
