@@ -1,3 +1,7 @@
 @import "~bootstrap";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
 @import "~@fortawesome/fontawesome-free/scss/solid";
+
+th, td {
+    vertical-align: middle;
+}
