@@ -2,6 +2,8 @@ let Encore = require('@symfony/webpack-encore');
 let dotenv = require ("dotenv");
 let fs = require('fs');
 
+console.log(process.env.TEST)
+
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
 if (!Encore.isRuntimeEnvironmentConfigured()) {
@@ -74,11 +76,10 @@ Encore
     //.enableReactPreset()
     //.addEntry('admin', './assets/admin.js')
     .configureDefinePlugin(options => {
-        const env = dotenv.config();
-
-        const envConfig = dotenv.parse(fs.readFileSync('process.env'))
-
-        options['process.env'].GOOGLE_MAP_API_KEY = "'"+envConfig.GOOGLE_MAP_API_KEY+"'";
+        if (typeof process.env.GOOGLE_MAP_API_KEY === "undefined") {
+            googleMapApiKey = dotenv.parse(fs.readFileSync('process.env')).GOOGLE_MAP_API_KEY;
+            options['process.env'].GOOGLE_MAP_API_KEY = "'"+envConfig.GOOGLE_MAP_API_KEY+"'";
+        }
     })
 ;
 

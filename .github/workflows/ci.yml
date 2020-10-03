@@ -45,7 +45,7 @@ jobs:
       - name: Install NPM dependencies
         run: |
           npm install
-          npm run dev
+          GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} npm run dev
       - name: Prepare database
         run: |
           php bin/console doctrine:database:create
