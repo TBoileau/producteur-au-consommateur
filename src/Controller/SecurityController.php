@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Customer;
@@ -11,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Uid\Uuid;
 
 /**
@@ -24,7 +27,7 @@ class SecurityController extends AbstractController
      * @param Request $request
      * @param UserPasswordEncoderInterface $userPasswordEncoder
      * @return Response
-     * @Route("/registration/{role}", name="registration")
+     * @Route("/registration/{role}", name="security_registration")
      */
     public function registration(
         string $role,
@@ -49,5 +52,25 @@ class SecurityController extends AbstractController
         return $this->render("ui/security/registration.html.twig", [
             "form" => $form->createView()
         ]);
+    }
+
+    /**
+     * @param AuthenticationUtils $authenticationUtils
+     * @return Response
+     * @Route("/login", name="security_login")
+     */
+    public function login(AuthenticationUtils $authenticationUtils): Response
+    {
+        return $this->render("ui/security/login.html.twig", [
+            "last_username" => $authenticationUtils->getLastUsername(),
+            "error" => $authenticationUtils->getLastAuthenticationError()
+        ]);
+    }
+
+    /**
+     * @Route("/logout", name="security_logout")
+     */
+    public function logout(): void
+    {
     }
 }
