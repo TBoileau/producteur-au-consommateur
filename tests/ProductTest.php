@@ -48,6 +48,31 @@ class ProductTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
+    public function testSuccessfulProductStock(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $crawler = $client->request(Request::METHOD_GET, $router->generate("product_stock", [
+            "id" => (string) $product->getId()
+        ]));
+
+        $form = $crawler->filter("form[name=stock]")->form([
+            "stock[quantity]" => 10
+        ]);
+
+        $client->submit($form);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+    }
+
     public function testSuccessfulProductUpdate(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");
