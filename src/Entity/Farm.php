@@ -26,7 +26,7 @@ class Farm
     private ?string $name = null;
 
     /**
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(nullable=true, type="text")
      * @Assert\NotBlank
      */
     private ?string $description = null;
