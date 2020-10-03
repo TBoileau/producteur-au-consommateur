@@ -2,6 +2,8 @@
 
 namespace App\Tests;
 
+use App\Entity\Farm;
+use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,12 +11,44 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Class UpdateFarmTest
+ * Class FarmTest
  * @package App\Tests
  */
-class UpdateFarmTest extends WebTestCase
+class FarmTest extends WebTestCase
 {
     use AuthenticationTrait;
+
+    public function testSuccessfulFarmShow(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $farm = $entityManager->getRepository(Farm::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("farm_show", [
+            "id" => $farm->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
+
+
+    public function testSuccessfulFarmAll(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("farm_all"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
 
     public function testSuccessfulFarmUpdate(): void
     {
