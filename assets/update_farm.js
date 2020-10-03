@@ -1,5 +1,40 @@
 import './app';
 
+class Address
+{
+    constructor(data, callback)
+    {
+        Object.assign(this, data);
+        this.element = $(`<li>${this.formatted_address}</li>`);
+        this.element.on("click", () => callback(this));
+    }
+
+    render()
+    {
+        $(".auto-complete").append(this.element);
+    }
+
+    get number()
+    {
+        return this.address_components.find(data => data.types.indexOf("street_number") >= 0).long_name
+    }
+
+    get route()
+    {
+        return this.address_components.find(data => data.types.indexOf("route") >= 0).long_name
+    }
+
+    get zipCode()
+    {
+        return this.address_components.find(data => data.types.indexOf("postal_code") >= 0).long_name
+    }
+
+    get city()
+    {
+        return this.address_components.find(data => data.types.indexOf("locality") >= 0).long_name
+    }
+}
+
 class Map
 {
     constructor()
@@ -10,7 +45,63 @@ class Map
         };
         this.map = null;
         this.marker = null;
+        this.addresses = [];
         this.loadGeolocation();
+        $("#farm_address_address").on("input", this.search.bind(this));
+    }
+
+    addMarker()
+    {
+        if (this.marker !== null) {
+            this.marker.setMap(null);
+        }
+        if ($("#farm_address_position_latitude").val() !== "" && $("#farm_address_position_longitude").val() !== "") {
+            this.map.setZoom(16);
+            this.marker = new google.maps.Marker({
+                position: {
+                    lat: parseFloat($("#farm_address_position_latitude").val()),
+                    lng: parseFloat($("#farm_address_position_longitude").val())
+                },
+                map: this.map,
+                title: "Mon exploitation"
+            });
+        }
+    }
+
+    select(address)
+    {
+        $("#farm_address_address").val(address.number + " " + address.route);
+        $("#farm_address_zipCode").val(address.zipCode);
+        $("#farm_address_city").val(address.city);
+        $("#farm_address_position_latitude").val(address.geometry.location.lat);
+        $("#farm_address_position_longitude").val(address.geometry.location.lng);
+        this.addresses = [];
+        this.autoCompletion();
+        this.addMarker();
+    }
+
+    search(e)
+    {
+        fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${e.currentTarget.value}&key=${process.env.GOOGLE_MAP_API_KEY}`, {
+            method: 'get',
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+            .then(res => res.json())
+            .then(json => {
+                this.addresses = [];
+                if (json.status === "OK") {
+                    this.addresses = json.results.map(result => new Address(result, this.select.bind(this)));
+                }
+                this.autoCompletion();
+            });
+    }
+
+    autoCompletion()
+    {
+        $(".auto-complete").empty();
+        this.addresses.forEach(address => address.render());
     }
 
     loadGeolocation()
@@ -32,53 +123,7 @@ class Map
             zoom: 12
         });
 
-        if ($("#farm_address_position_latitude").val() !== "") {
-            this.marker = new google.maps.Marker({
-                position: {
-                    lat: parseFloat($("#farm_address_position_latitude").val()),
-                    lng: parseFloat($("#farm_address_position_longitude").val())
-                },
-                map: this.map,
-                title: "Mon exploitation",
-            });
-        }
-
-        this.map.addListener("click", this.getPosition.bind(this));
-    }
-
-    getPosition(e) {
-        this.center = {
-            lat: e.latLng.lat(),
-            lng: e.latLng.lng()
-        };
-
-        this.map.panTo(new google.maps.LatLng(this.center.lat, this.center.lng));
-
-        this.marker = new google.maps.Marker({
-            position: this.center,
-            map: this.map,
-            title: "Mon exploitation",
-        });
-
-        fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.marker.position.lat()},${this.marker.position.lng()}&key=${process.env.GOOGLE_MAP_API_KEY}`, {
-            method: 'get',
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
-            .then(res => res.json())
-            .then(json => {
-                let number = json.results[0].address_components.find(data => data.types.indexOf("street_number") >= 0).long_name;
-                let route = json.results[0].address_components.find(data => data.types.indexOf("route") >= 0).long_name;
-                let locality = json.results[0].address_components.find(data => data.types.indexOf("locality") >= 0).long_name;
-                let postal_code = json.results[0].address_components.find(data => data.types.indexOf("postal_code") >= 0).long_name;
-
-                $("#farm_address_address").val(number + " " + route);
-                $("#farm_address_zipCode").val(postal_code);
-                $("#farm_address_city").val(locality);
-                $("#farm_address_position_latitude").val(this.marker.position.lat());
-                $("#farm_address_position_longitude").val(this.marker.position.lng());
-            })
+        this.addMarker();
     }
 }
 
