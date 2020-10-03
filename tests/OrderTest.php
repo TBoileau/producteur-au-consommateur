@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Entity\Farm;
+use App\Entity\Order;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
@@ -12,14 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
- * Class CartTest
+ * Class OrderTest
  * @package App\Tests
  */
-class CartTest extends WebTestCase
+class OrderTest extends WebTestCase
 {
     use AuthenticationTrait;
 
-    public function testSuccessfulAddToCart(): void
+    public function testSuccessfulCreateOrderAndCancelIt(): void
     {
         $client = static::createAuthenticatedClient("customer@email.com");
 
@@ -37,20 +38,16 @@ class CartTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $crawler = $client->request(Request::METHOD_GET, $router->generate("cart_index"));
-
-        $this->assertEquals(1, $crawler->filter("tbody > tr")->count());
-
-        $form = $crawler->filter("form[name=cart]")->form([
-            "cart[cart][0][quantity]" => 0
-        ]);
-
-        $client->submit($form);
+        $client->request(Request::METHOD_GET, $router->generate("order_create"));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
-        $crawler = $client->followRedirect();
+        $order = $entityManager->getRepository(Order::class)->findOneBy(["state" => "created"]);
 
-        $this->assertEquals(0, $crawler->filter("tbody > tr")->count());
+        $client->request(Request::METHOD_GET, $router->generate("order_cancel", [
+            "id" => $order->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 }
