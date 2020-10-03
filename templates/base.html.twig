@@ -22,8 +22,17 @@
                             <a class="nav-link" href="{{ path("index") }}">Accueil <span class="sr-only">(current)</span></a>
                         </li>
                         {% if is_granted("ROLE_USER") %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ path("security_logout") }}">Se déconnecter</a>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    SMon compte
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    {% if is_granted("ROLE_PRODUCER") %}
+                                        <a class="dropdown-item" href="{{ path("farm_update") }}">Modifier mon exploitation</a>
+                                    {% endif %}
+                                    <a class="dropdown-item" href="{{ path("security_logout") }}">Se déconnecter</a>
+                                </div>
                             </li>
                         {% else %}
                             <li class="nav-item">
@@ -34,7 +43,7 @@
                                     S'inscrire
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ path("security_registration", { role: 'producer' }) }}">En tant producteur</a>
+                                    <a class="dropdown-item" href="{{ path("security_registration", { role: 'producer' }) }}">En tant que producteur</a>
                                     <a class="dropdown-item" href="{{ path("security_registration", { role: 'customer' }) }}">En tant que consommateur</a>
                                 </div>
                             </li>
