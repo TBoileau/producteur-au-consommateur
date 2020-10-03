@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites/>
+<testsuites>
+  <testsuite name="" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="17.464372">
+    <testsuite name="Project Test Suite" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="17.464372">
+      <testsuite name="App\Tests\RegistrationTest" file="C:\Users\Thomas\Documents\Projets\producteurauconsommateur.com\tests\RegistrationTest.php" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="17.464372">
+        <testsuite name="App\Tests\RegistrationTest::testSuccessfulRegistration" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="17.464372">
+          <testcase name="testSuccessfulRegistration with data set #0" class="App\Tests\RegistrationTest" classname="App.Tests.RegistrationTest" file="C:\Users\Thomas\Documents\Projets\producteurauconsommateur.com\tests\RegistrationTest.php" line="21" assertions="1" time="16.827129"/>
+          <testcase name="testSuccessfulRegistration with data set #1" class="App\Tests\RegistrationTest" classname="App.Tests.RegistrationTest" file="C:\Users\Thomas\Documents\Projets\producteurauconsommateur.com\tests\RegistrationTest.php" line="21" assertions="1" time="0.637243"/>
+        </testsuite>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
