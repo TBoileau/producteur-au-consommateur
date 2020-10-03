@@ -33,6 +33,7 @@
                                         <a class="dropdown-item" href="{{ path("product_index") }}">Mes produits</a>
                                     {% elseif is_granted("ROLE_CUSTOMER") %}
                                         <a class="dropdown-item" href="{{ path("cart_index") }}">Mon panier</a>
+                                        <a class="dropdown-item" href="{{ path("order_history") }}">Mes commandes</a>
                                     {% endif %}
                                     <a class="dropdown-item" href="{{ path("security_logout") }}">Se déconnecter</a>
                                 </div>
