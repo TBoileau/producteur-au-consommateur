@@ -10,6 +10,7 @@ use App\Entity\Producer;
 use App\Entity\User;
 use App\Form\ForgottenPasswordType;
 use App\Form\RegistrationType;
+use App\Form\ResetPasswordType;
 use App\Repository\UserRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -123,8 +124,41 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/reset-password/{token}", name="security_reset_password")
+     * @param string $token
+     * @param Request $request
+     * @param UserRepository $userRepository
+     * @param UserPasswordEncoderInterface $userPasswordEncoder
+     * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function resetPassword(string $token)
-    {
+    public function resetPassword(
+        string $token,
+        Request $request,
+        UserRepository $userRepository,
+        UserPasswordEncoderInterface $userPasswordEncoder
+    ): Response {
+        $user = $userRepository->getUserByForgottenPasswordToken(Uuid::fromString($token));
+
+        if (null === $user) {
+            $this->addFlash("danger", "Cette demande d'oubli de mot de passe n'existe pas.");
+        }
+
+        $form = $this->createForm(ResetPasswordType::class, $user)->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user->setPassword(
+                $userPasswordEncoder->encodePassword($user, $user->getPlainPassword())
+            );
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash(
+                "success",
+                "Votre mot de passe a été modifié avec succès."
+            );
+            return $this->redirectToRoute("security_login");
+        }
+
+        return $this->render("ui/security/reset_password.html.twig", [
+            "form" => $form->createView()
+        ]);
     }
 }
