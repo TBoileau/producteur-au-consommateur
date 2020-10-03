@@ -83,18 +83,6 @@
         "symfony/polyfill-php56": "*"
     },
     "scripts": {
-        "prepare-test": [
-            "php bin/console d:d:d --if-exists --force --env=test",
-            "php bin/console d:d:c --env=test",
-            "php bin/console d:s:u -f --env=test",
-            "php bin/console d:f:l -n --env=test"
-        ],
-        "prepare-dev": [
-            "php bin/console d:d:d --if-exists --force --env=dev",
-            "php bin/console d:d:c --env=dev",
-            "php bin/console d:s:u -f --env=dev",
-            "php bin/console d:f:l -n --env=dev"
-        ],
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
