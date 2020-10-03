@@ -45,7 +45,9 @@ class SecurityController extends AbstractController
         $user = Producer::ROLE === $role ? new Producer() : new Customer();
         $user->setId(Uuid::v4());
 
-        $form = $this->createForm(RegistrationType::class, $user)->handleRequest($request);
+        $form = $this->createForm(RegistrationType::class, $user, [
+            "validation_groups" => ["Default", "password"]
+        ])->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword(
@@ -143,7 +145,9 @@ class SecurityController extends AbstractController
             $this->addFlash("danger", "Cette demande d'oubli de mot de passe n'existe pas.");
         }
 
-        $form = $this->createForm(ResetPasswordType::class, $user)->handleRequest($request);
+        $form = $this->createForm(ResetPasswordType::class, $user, [
+            "validation_groups" => ["password"]
+        ])->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setPassword(

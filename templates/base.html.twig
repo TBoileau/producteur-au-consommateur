@@ -31,6 +31,8 @@
                                     {% if is_granted("ROLE_PRODUCER") %}
                                         <a class="dropdown-item" href="{{ path("farm_update") }}">Modifier mon exploitation</a>
                                         <a class="dropdown-item" href="{{ path("product_index") }}">Mes produits</a>
+                                    {% elseif is_granted("ROLE_CUSTOMER") %}
+                                        <a class="dropdown-item" href="{{ path("cart_index") }}">Mon panier</a>
                                     {% endif %}
                                     <a class="dropdown-item" href="{{ path("security_logout") }}">Se déconnecter</a>
                                 </div>

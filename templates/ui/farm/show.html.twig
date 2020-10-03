@@ -12,6 +12,9 @@
                             {{ product.description|nl2br }}
                         </p>
                     </div>
+                    <div class="card-footer">
+                        <a href="{{ path("cart_add", { id: product.id }) }}" class="btn btn-primary btn-block">Ajouter au panier</a>
+                    </div>
                 </div>
             </div>
         {% endfor %}
