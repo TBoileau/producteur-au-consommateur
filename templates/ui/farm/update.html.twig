@@ -2,11 +2,18 @@
 
 {% block body %}
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-6 col-xl-4">
+        <div class="col-12">
             {{ form_start(form) }}
                 <div class="card">
                     <div class="card-header">
                         <h1 class="mb-0">Mon exploitation</h1>
+                    </div>
+                    <div class="card-body">
+                        {{ form_row(form.name) }}
+                        {{ form_row(form.description) }}
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="map" class="w-100"></div>
                     </div>
                     <div class="card-body">
                         {{ form_rest(form) }}
@@ -18,4 +25,11 @@
             {{ form_end(form) }}
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script defer
+            src="https://maps.googleapis.com/maps/api/js?key={{ google_map_api_key }}&callback=initMap">
+    </script>
+    {{ encore_entry_script_tags('update_farm') }}
 {% endblock %}

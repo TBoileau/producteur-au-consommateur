@@ -2,3 +2,5 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     form_themes:
         - 'bootstrap_4_layout.html.twig'
+    globals:
+        google_map_api_key: '%env(GOOGLE_MAP_API_KEY)%'
