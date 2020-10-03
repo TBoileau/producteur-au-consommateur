@@ -1,0 +1,120 @@
+@startuml
+
+class User {
+	{field} id: Uuid
+	{field} firstName: string
+	{field} lastName: string
+	{field} email: string
+	{field} password: string
+	{field} registeredAt: DateTimeImmutable
+	{field} forgottenPassword: ?ForgottenPassword
+}
+
+class ForgottenPassword {
+	{field} token: string
+	{field} sentAt: DateTimeImmutable
+}
+
+class Producer {
+	{field} farm: Farm
+}
+
+class Farm {
+	{field} id: Uuid
+	{field} name: string
+	{field} slug: string
+	{field} logo: ?string
+	{field} image: ?string
+	{field} description: ?string
+	{field} address: ?Address
+	{field} products: Collection<Product>
+	{field} producer: Producer
+}
+
+class Address {
+	{field} address: string
+	{field} restAddress: ?string
+	{field} zipCode: string
+	{field} city: string
+	{field} position: Position
+}
+
+class Position {
+	{field} latitude: float
+	{float} longitude: float
+}
+
+class Product {
+	{field} id: Uuid
+	{field} name: string
+	{field} slug: string
+	{field} price: Price
+	{field} image: ?string
+	{field} quantity: integer
+	{field} farm: Farm
+}
+
+class Price {
+	{field} unitPrice: integer
+	{field} vat: float
+}
+
+class Order {
+	{field} id: Uuid
+	{field} orderedAt: DateTimeImmutable
+	{field} acceptedAt: ?DateTimeImmutable
+	{field} canceledAt: ?DateTimeImmutable
+	{field} refusedAt: ?DateTimeImmutable
+	{field} state: string
+	{field} farm: Farm
+	{field} customer: Customer
+	{field} slot: ?Slot
+	{field} slots: Collection<Slot>
+	{field} lines: Collection<OrderLine>
+}
+
+class OrderLine {
+	{field} id: Uuid
+	{field} order: Order
+	{field} price: Price
+	{field} quantity: integer
+	{field} product: Product
+}
+
+class Slot {
+	{field} id: Uuid
+	{field} order: Order
+	{field} startedAt: DateTimeImmutable
+	{field} endedAt: DateTimeImmutable
+}
+
+
+class Customer {
+	{field} cart: Collection<CartItem>
+}
+
+class CartItem {
+	{field} id: Uuid
+	{field} product: Product
+	{field} customer: Customer
+	{field} quantity: int
+}
+
+Customer -|> User
+Producer -|> User
+Slot "Many" -- "One" Order
+Order "Many" -- "One" OrderLine
+OrderLine "Many" -- "One" Product
+Farm "One" -- "Many" Order
+Farm "Many" -- "One" Product
+Producer "One" -- "One" Farm
+Order "Many" -- "One" Customer
+Customer "One" -- "Many" CartItem
+Product "One" -- "Many" CartItem
+Product *-- Price
+OrderLine *-- Price
+Farm *-- Address
+Address *-- Position
+User *-- ForgottenPassword
+
+@enduml
