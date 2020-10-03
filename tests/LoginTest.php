@@ -15,10 +15,10 @@ use Symfony\Component\Routing\RouterInterface;
 class LoginTest extends WebTestCase
 {
     /**
-     * @param string $role
+     * @param string $email
      * @dataProvider provideEmails
      */
-    public function testSuccessfulRegistration(string $email): void
+    public function testSuccessfulLogin(string $email): void
     {
         $client = static::createClient();
 
