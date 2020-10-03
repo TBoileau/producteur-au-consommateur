@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            {{ form_start(form) }}
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">Mon panier</h1>
+                </div>
+                <table class="mb-0 table table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Nom du produit</th>
+                        <th class="text-center">Prix unitaire</th>
+                        <th class="text-center">TVA</th>
+                        <th class="text-center">Quantité</th>
+                        <th class="text-center">Prix total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cartItem in form.cart %}
+                        <tr>
+                            <td class="text-center">{{ cartItem.vars.data.product.name }}</td>
+                            <td class="text-center">{{ (cartItem.vars.data.product.price.unitPrice/100)|format_currency('EUR') }}</td>
+                            <td class="text-center">{{ cartItem.vars.data.product.price.vat }}%</td>
+                            <td class="text-center">{{ form_widget(cartItem.quantity) }}</td>
+                            <td class="text-center">{{ cartItem.vars.data.priceIncludingTaxes|format_currency('EUR') }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-right" colspan="4">Total TTC</td>
+                            <td class="text-center">{{ app.user.totalCartIncludingTaxes|format_currency('EUR') }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div class="card-footer">
+                    <button class="btn btn-block btn-primary">Modifier</button>
+                </div>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

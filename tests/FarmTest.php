@@ -20,7 +20,7 @@ class FarmTest extends WebTestCase
 
     public function testSuccessfulFarmShow(): void
     {
-        $client = static::createAuthenticatedClient("producer@email.com");
+        $client = static::createAuthenticatedClient("customer@email.com");
 
         /** @var RouterInterface $router */
         $router = $client->getContainer()->get("router");
