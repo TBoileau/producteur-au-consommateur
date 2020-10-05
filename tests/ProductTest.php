@@ -6,9 +6,11 @@ use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * Class ProductTest
@@ -94,7 +96,8 @@ class ProductTest extends WebTestCase
             "product[name]" => "Produit",
             "product[description]" => "Description",
             "product[price][unitPrice]" => 100,
-            "product[price][vat]" => 2.1
+            "product[price][vat]" => 2.1,
+            "product[image][file]" => $this->createImage()
         ]);
 
         $client->submit($form);
@@ -115,7 +118,8 @@ class ProductTest extends WebTestCase
             "product[name]" => "Produit",
             "product[description]" => "Description",
             "product[price][unitPrice]" => 100,
-            "product[price][vat]" => 2.1
+            "product[price][vat]" => 2.1,
+            "product[image][file]" => $this->createImage()
         ]);
 
         $client->submit($form);
@@ -357,5 +361,25 @@ class ProductTest extends WebTestCase
         $client->followRedirect();
         
         $this->assertRouteSame("security_login");
+    }
+
+    /**
+     * @return UploadedFile
+     */
+    private function createImage(): UploadedFile
+    {
+        $filename = Uuid::v4() . '.png';
+        copy(
+            __DIR__ . '/../public/uploads/image.png',
+            __DIR__ . '/../public/uploads/' . $filename
+        );
+
+        return new UploadedFile(
+            __DIR__ . '/../public/uploads/' . $filename,
+            $filename,
+            'image/png',
+            null,
+            true
+        );
     }
 }
