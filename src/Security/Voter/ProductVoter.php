@@ -61,10 +61,6 @@ class ProductVoter extends Voter
             return true;
         }
 
-        dump($customer->getCart()
-            ->map(fn (CartItem $cartItem) => $cartItem->getProduct()->getFarm())
-            ->contains($product->getFarm()));
-
         return $customer->getCart()
             ->map(fn (CartItem $cartItem) => $cartItem->getProduct()->getFarm())
             ->contains($product->getFarm());
