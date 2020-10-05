@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use Symfony\Component\Uid\Uuid;
+use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * Class OrderLine
@@ -15,8 +16,10 @@ class OrderLine
     /**
      * @ORM\Id
      * @ORM\Column(type="uuid")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      */
-    private Uuid $id;
+    private UuidInterface $id;
 
     /**
      * @ORM\Embedded(class="Price")
@@ -41,19 +44,11 @@ class OrderLine
     private ?Product $product = null;
 
     /**
-     * @return Uuid
+     * @return UuidInterface
      */
-    public function getId(): Uuid
+    public function getId(): UuidInterface
     {
         return $this->id;
-    }
-
-    /**
-     * @param Uuid $id
-     */
-    public function setId(Uuid $id): void
-    {
-        $this->id = $id;
     }
 
     /**

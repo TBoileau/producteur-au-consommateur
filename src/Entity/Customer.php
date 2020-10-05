@@ -51,7 +51,6 @@ class Customer extends User
 
         if ($products->count() === 0) {
             $cartItem = new CartItem();
-            $cartItem->setId(Uuid::v4());
             $cartItem->setQuantity(1);
             $cartItem->setCustomer($this);
             $cartItem->setProduct($product);
