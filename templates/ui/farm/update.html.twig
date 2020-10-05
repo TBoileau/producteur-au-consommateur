@@ -20,6 +20,9 @@
                     {{ form_row(form.address.restAddress) }}
                     {{ form_row(form.address.zipCode) }}
                     {{ form_row(form.address.city) }}
+
+                    <button type="button" class="btn btn-outline-danger btn-remove-file" data-target="#farm_image_path">Supprimer l'image</button>
+                    {{ form_row(form.image) }}
                 </div>
                 <div class="card-footer">
                     <button class="btn btn-block btn-primary">Modifier</button>
