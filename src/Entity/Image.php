@@ -16,12 +16,12 @@ class Image
     /**
      * @ORM\Column(name="image_path", nullable=true)
      */
-    private ?string $path;
+    private ?string $path = null;
 
     /**
      * @Assert\Image
      */
-    private ?UploadedFile $file;
+    private ?UploadedFile $file = null;
 
     /**
      * @return string|null
