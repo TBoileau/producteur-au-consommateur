@@ -37,10 +37,6 @@ class ProductVoter extends Voter
     {
         $user = $token->getUser();
 
-        if (!$user instanceof User) {
-            return false;
-        }
-
         /** @var Product $subject */
 
         if ($attribute === self::ADD_TO_CART) {

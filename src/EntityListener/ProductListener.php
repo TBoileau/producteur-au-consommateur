@@ -45,13 +45,13 @@ class ProductListener
      */
     public function prePersist(Product $product): void
     {
+        $this->upload($product);
+
         if ($product->getFarm() !== null) {
-            return;
+            return; // @codeCoverageIgnore
         }
 
         $product->setFarm($this->security->getUser()->getFarm());
-
-        $this->upload($product);
     }
 
     /**

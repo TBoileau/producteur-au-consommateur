@@ -41,12 +41,30 @@ class UserFixtures extends Fixture
         $producer->setEmail("producer@email.com");
         $manager->persist($producer);
 
+        for ($i = 1; $i <= 4; $i++) {
+            $producer = new Producer();
+            $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, "password"));
+            $producer->setFirstName("Jane");
+            $producer->setLastName("Doe");
+            $producer->setEmail("producer+" . $i . "@email.com");
+            $manager->persist($producer);
+        }
+
         $customer = new Customer();
         $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, "password"));
         $customer->setFirstName("John");
         $customer->setLastName("Doe");
         $customer->setEmail("customer@email.com");
         $manager->persist($customer);
+
+        for ($i = 1; $i <= 19; $i++) {
+            $customer = new Customer();
+            $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, "password"));
+            $customer->setFirstName("John");
+            $customer->setLastName("Doe");
+            $customer->setEmail("customer" . $i . "@email.com");
+            $manager->persist($customer);
+        }
 
         $manager->flush();
     }

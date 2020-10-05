@@ -53,6 +53,25 @@ class OrderTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
+    public function testAccessDeniedCancelOrder(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy(["state" => "created"]);
+
+        $client->request(Request::METHOD_GET, $router->generate("order_cancel", [
+            "id" => $order->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
     public function testAccessDeniedCreateOrder(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");

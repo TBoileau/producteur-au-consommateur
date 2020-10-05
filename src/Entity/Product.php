@@ -46,7 +46,7 @@ class Product
      * @ORM\ManyToOne(targetEntity="Farm")
      * @ORM\JoinColumn(onDelete="CASCADE", nullable=false)
      */
-    private Farm $farm;
+    private ?Farm $farm = null;
 
     /**
      * @ORM\Embedded(class="Price")
@@ -58,7 +58,7 @@ class Product
      * @ORM\Embedded(class="Image")
      * @Assert\Valid
      */
-    private Image $image;
+    private ?Image $image = null;
 
     /**
      * @return UuidInterface
@@ -117,17 +117,17 @@ class Product
     }
 
     /**
-     * @return Farm
+     * @return Farm|null
      */
-    public function getFarm(): Farm
+    public function getFarm(): ?Farm
     {
         return $this->farm;
     }
 
     /**
-     * @param Farm $farm
+     * @param Farm|null $farm
      */
-    public function setFarm(Farm $farm): void
+    public function setFarm(?Farm $farm): void
     {
         $this->farm = $farm;
     }
@@ -157,17 +157,17 @@ class Product
     }
 
     /**
-     * @return Image
+     * @return Image|null
      */
-    public function getImage(): Image
+    public function getImage(): ?Image
     {
         return $this->image;
     }
 
     /**
-     * @param Image $image
+     * @param Image|null $image
      */
-    public function setImage(Image $image): void
+    public function setImage(?Image $image): void
     {
         $this->image = $image;
     }

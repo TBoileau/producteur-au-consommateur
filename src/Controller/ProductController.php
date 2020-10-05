@@ -44,6 +44,7 @@ class ProductController extends AbstractController
         $form = $this->createForm(ProductType::class, $product)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->persist($product);
             $this->getDoctrine()->getManager()->flush();
             $this->addFlash(
                 "success",

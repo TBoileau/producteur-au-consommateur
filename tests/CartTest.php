@@ -3,6 +3,7 @@
 namespace App\Tests;
 
 use App\Entity\Farm;
+use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
@@ -52,6 +53,37 @@ class CartTest extends WebTestCase
         $crawler = $client->followRedirect();
 
         $this->assertEquals(0, $crawler->filter("tbody > tr")->count());
+    }
+
+    public function testAccessDeniedAddToCart(): void
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("cart_add", [
+            "id" => $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer+1@email.com");
+
+        $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
+
+        $product = $entityManager->getRepository(Product::class)->findOneByFarm($farm);
+
+        $client->request(Request::METHOD_GET, $router->generate("cart_add", [
+            "id" => $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testAccessDeniedCart(): void
