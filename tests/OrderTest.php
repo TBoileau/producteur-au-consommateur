@@ -42,6 +42,8 @@ class OrderTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 
+        $client->followRedirect();
+
         $order = $entityManager->getRepository(Order::class)->findOneBy(["state" => "created"]);
 
         $client->request(Request::METHOD_GET, $router->generate("order_cancel", [
