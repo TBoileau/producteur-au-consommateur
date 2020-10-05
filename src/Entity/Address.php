@@ -29,7 +29,7 @@ class Address
     /**
      * @ORM\Column(length=5, nullable=true)
      * @Assert\NotBlank
-     * @Assert\Regex(pattern="/^[A-Za-z0-9]{5}$/")
+     * @Assert\Regex(pattern="/^[A-Za-z0-9]{5}$/", message="Code postal invalide.")
      * @Groups({"read"})
      */
     private ?string $zipCode = null;
