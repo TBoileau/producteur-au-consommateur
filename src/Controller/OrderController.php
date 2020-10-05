@@ -46,7 +46,7 @@ class OrderController extends AbstractController
         $this->getUser()->getCart()->clear();
         $this->getDoctrine()->getManager()->persist($order);
         $this->getDoctrine()->getManager()->flush();
-        return $this->redirectToRoute("index");
+        return $this->redirectToRoute("order_history");
     }
 
     /**
