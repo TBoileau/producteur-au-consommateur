@@ -76,7 +76,6 @@ Encore
     .configureDefinePlugin(options => {
         if (typeof process.env.GOOGLE_MAP_API_KEY === "undefined") {
             const envConfig = dotenv.parse(fs.readFileSync('process.env'));
-            googleMapApiKey = envConfig.GOOGLE_MAP_API_KEY;
             options['process.env'].GOOGLE_MAP_API_KEY = "'"+envConfig.GOOGLE_MAP_API_KEY+"'";
         }
     })
