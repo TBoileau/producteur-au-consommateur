@@ -39,7 +39,6 @@ class FarmTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-
     public function testSuccessfulFarmAll(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");
