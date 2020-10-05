@@ -35,7 +35,6 @@ class UserFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $producer = new Producer();
-        $producer->setId(Uuid::v4());
         $producer->setPassword($this->userPasswordEncoder->encodePassword($producer, "password"));
         $producer->setFirstName("Jane");
         $producer->setLastName("Doe");
@@ -43,7 +42,6 @@ class UserFixtures extends Fixture
         $manager->persist($producer);
 
         $customer = new Customer();
-        $customer->setId(Uuid::v4());
         $customer->setPassword($this->userPasswordEncoder->encodePassword($customer, "password"));
         $customer->setFirstName("John");
         $customer->setLastName("Doe");

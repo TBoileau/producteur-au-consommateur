@@ -28,13 +28,11 @@ class OrderController extends AbstractController
     public function create(): RedirectResponse
     {
         $order = new Order();
-        $order->setId(Uuid::v4());
         $order->setCustomer($this->getUser());
 
         /** @var CartItem $cartItem */
         foreach ($this->getUser()->getCart() as $cartItem) {
             $line = new OrderLine();
-            $line->setId(Uuid::v4());
             $line->setOrder($order);
             $line->setQuantity($cartItem->getQuantity());
             $line->setProduct($cartItem->getProduct());
