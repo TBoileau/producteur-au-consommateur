@@ -77,7 +77,7 @@ class RegistrationTest extends WebTestCase
 
     public function provideBadRequests(): Generator
     {
-        foreach(["customer", "producer"] as $role) {
+        foreach (["customer", "producer"] as $role) {
             yield [
                 $role,
                 [
