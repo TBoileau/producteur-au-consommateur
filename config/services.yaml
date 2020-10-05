@@ -5,7 +5,7 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     upload_web_dir: 'uploads/'
-    upload_absolute_dir: '%kernel.project_dir%/%upload_web_dir%'
+    upload_absolute_dir: '%kernel.project_dir%/public/%upload_web_dir%'
 
 services:
     # default configuration for services in *this* file
