@@ -193,4 +193,32 @@ class FarmTest extends WebTestCase
             "Code postal invalide."
         ];
     }
+
+    public function testAccessDeniedFarmUpdate(): void
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("farm_update"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testNonLoggedFarmUpdate(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("farm_update"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        $this->assertRouteSame("security_login");
+    }
 }

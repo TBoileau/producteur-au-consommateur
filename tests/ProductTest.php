@@ -218,4 +218,144 @@ class ProductTest extends WebTestCase
             "Cette valeur doit être supérieure à 0."
         ];
     }
+
+    public function testAccessDeniedProductCreate()
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("product_create"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProductUpdate()
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("product_update", [
+            "id" => (string) $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProductDelete()
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("product_delete", [
+            "id" => (string) $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testAccessDeniedProducts()
+    {
+        $client = static::createAuthenticatedClient("customer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("product_index"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testNoLoggedProductCreate()
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("product_create"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        $this->assertRouteSame("security_login");
+    }
+
+    public function testNoLoggedProductUpdate()
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("product_update", [
+            "id" => (string) $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        $this->assertRouteSame("security_login");
+    }
+
+    public function testNoLoggedProductDelete()
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+
+        $client->request(Request::METHOD_GET, $router->generate("product_delete", [
+            "id" => (string) $product->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        $this->assertRouteSame("security_login");
+    }
+
+    public function testNoLoggedProducts()
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("product_index"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+        
+        $this->assertRouteSame("security_login");
+    }
 }

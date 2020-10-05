@@ -52,4 +52,32 @@ class OrderTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
+
+    public function testAccessDeniedCreateOrder(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("order_create"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testNonLoggedCreateOrder(): void
+    {
+        $client = static::createClient();
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        $client->request(Request::METHOD_GET, $router->generate("order_create"));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $client->followRedirect();
+
+        $this->assertRouteSame("security_login");
+    }
 }
