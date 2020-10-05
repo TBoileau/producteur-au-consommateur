@@ -6,6 +6,7 @@ use App\Entity\CartItem;
 use App\Entity\Customer;
 use App\Entity\Producer;
 use App\Entity\Product;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -36,17 +37,17 @@ class ProductVoter extends Voter
     {
         $user = $token->getUser();
 
-        if (!$user instanceof Producer) {
+        if (!$user instanceof User) {
             return false;
         }
 
         /** @var Product $subject */
 
         if ($attribute === self::ADD_TO_CART) {
-            return $this->voteOnAddToCart($user, $subject);
+            return $user instanceof Customer && $this->voteOnAddToCart($user, $subject);
         }
 
-        return $subject->getFarm() === $user->getFarm();
+        return $user instanceof Producer && $subject->getFarm() === $user->getFarm();
     }
 
     /**
@@ -59,6 +60,10 @@ class ProductVoter extends Voter
         if ($customer->getCart()->count() === 0) {
             return true;
         }
+
+        dump($customer->getCart()
+            ->map(fn (CartItem $cartItem) => $cartItem->getProduct()->getFarm())
+            ->contains($product->getFarm()));
 
         return $customer->getCart()
             ->map(fn (CartItem $cartItem) => $cartItem->getProduct()->getFarm())
