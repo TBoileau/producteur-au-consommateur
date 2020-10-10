@@ -31,7 +31,7 @@ class CartController extends AbstractController
         $this->getDoctrine()->getManager()->flush();
         $this->addFlash("success", "Le produit a bien été ajouté à votre panier.");
         return $this->redirectToRoute("farm_show", [
-            "id" => $product->getFarm()->getId()
+            "slug" => $product->getFarm()->getSlug()
         ]);
     }
 

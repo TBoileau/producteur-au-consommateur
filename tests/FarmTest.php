@@ -33,7 +33,7 @@ class FarmTest extends WebTestCase
         $farm = $entityManager->getRepository(Farm::class)->findOneBy([]);
 
         $client->request(Request::METHOD_GET, $router->generate("farm_show", [
-            "id" => $farm->getId()
+            "slug" => $farm->getSlug()
         ]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
@@ -61,7 +61,7 @@ class FarmTest extends WebTestCase
         $crawler = $client->request(Request::METHOD_GET, $router->generate("farm_update"));
 
         $form = $crawler->filter("form[name=farm]")->form([
-            "farm[name]" => "Exploitation",
+            "farm[name]" => "Exploitation modifié",
             "farm[description]" => "Description",
             "farm[address][address]" => "address",
             "farm[address][zipCode]" => "28000",

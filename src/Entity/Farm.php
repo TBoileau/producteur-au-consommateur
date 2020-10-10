@@ -12,6 +12,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
  * Class Farm
  * @package App\Entity
  * @ORM\Entity
+ * @ORM\EntityListeners({"App\EntityListener\FarmListener"})
  */
 class Farm
 {
@@ -22,18 +23,24 @@ class Farm
      * @ORM\CustomIdGenerator(class=UuidGenerator::class)
      * @Groups({"read"})
      */
-    private UuidInterface $id;
+    private ?UuidInterface $id = null;
 
     /**
-     * @ORM\Column(nullable=true)
+     * @ORM\Column()
      * @Assert\NotBlank
      * @Groups({"read"})
      */
-    private ?string $name = null;
+    private string $name = "";
+
+    /**
+     * @ORM\Column(unique=true)
+     * @Groups({"read"})
+     */
+    private string $slug;
 
     /**
      * @ORM\Column(nullable=true, type="text")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      */
     private ?string $description = null;
 
@@ -45,39 +52,55 @@ class Farm
 
     /**
      * @ORM\Embedded(class="Address")
-     * @Assert\Valid
+     * @Assert\Valid(groups={"edit"})
      * @Groups({"read"})
      */
     private ?Address $address = null;
 
     /**
      * @ORM\Embedded(class="Image")
-     * @Assert\Valid
+     * @Assert\Valid(groups={"edit"})
      */
     private Image $image;
 
     /**
-     * @return UuidInterface
+     * @return UuidInterface|null
      */
-    public function getId(): UuidInterface
+    public function getId(): ?UuidInterface
     {
         return $this->id;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param string|null $name
+     * @param string $name
      */
-    public function setName(?string $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     */
+    public function setSlug(string $slug): void
+    {
+        $this->slug = $slug;
     }
 
     /**

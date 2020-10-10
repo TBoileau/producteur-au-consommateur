@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Producer
  * @package App\Entity
  * @ORM\Entity
- * @ORM\EntityListeners({"App\EntityListener\ProducerListener"})
  */
 class Producer extends User
 {
@@ -18,8 +18,16 @@ class Producer extends User
 
     /**
      * @ORM\OneToOne(targetEntity="Farm", cascade={"persist"}, inversedBy="producer")
+     * @Assert\Valid
      */
     private Farm $farm;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->farm = new Farm();
+        $this->farm->setProducer($this);
+    }
 
     /**
      * @return array|string[]
