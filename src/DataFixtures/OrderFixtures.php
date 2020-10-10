@@ -38,6 +38,7 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
             if ($k % 2 === 0) {
                 $order = new Order();
                 $order->setCustomer($customer);
+                $order->setFarm($farm);
                 $manager->persist($order);
             }
 

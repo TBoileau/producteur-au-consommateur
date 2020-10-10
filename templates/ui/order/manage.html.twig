@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">Gestion des commandes</h1>
+                </div>
+                <table class="mb-0 table table-striped">
+                    <thead>
+                    <tr>
+                        <th class="text-center">Date de commande</th>
+                        <th class="text-center">Nombre de produit</th>
+                        <th class="text-center">Total TTC</th>
+                        <th class="text-center">Statut</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td class="text-center">{{ order.createdAt|date("d/m/Y") }}</td>
+                            <td class="text-center">{{ order.numberOfProducts }}</td>
+                            <td class="text-center">{{ order.totalIncludingTaxes|format_currency('EUR') }}</td>
+                            <td class="text-center">
+
+                            </td>
+                            <td class="text-center">
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -41,10 +41,24 @@ class OrderController extends AbstractController
             $order->getLines()->add($line);
         }
 
+        $order->setFarm($this->getUser()->getCart()->first()->getProduct()->getFarm());
         $this->getUser()->getCart()->clear();
         $this->getDoctrine()->getManager()->persist($order);
         $this->getDoctrine()->getManager()->flush();
         return $this->redirectToRoute("order_history");
+    }
+
+    /**
+     * @param OrderRepository $orderRepository
+     * @return Response
+     * @Route("/manage", name="order_manage")
+     * @IsGranted("ROLE_PRODUCER")
+     */
+    public function manage(OrderRepository $orderRepository): Response
+    {
+        return $this->render("ui/order/manage.html.twig", [
+            "orders" => $orderRepository->findByFarm($this->getUser()->getFarm())
+        ]);
     }
 
     /**
