@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\UserInfoType;
 use App\Form\UserPasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,26 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class UserController extends AbstractController
 {
+    /**
+     * @param Request $request
+     * @return Response
+     * @Route("/edit-info", name="user_edit_info")
+     */
+    public function editInfo(Request $request): Response
+    {
+        $form = $this->createForm(UserInfoType::class, $this->getUser())->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+            $this->addFlash("success", "Vos informations personnelles a été modifiées avec succès.");
+            return $this->redirectToRoute("user_edit_info");
+        }
+
+        return $this->render("ui/user/edit_info.html.twig", [
+            "form" => $form->createView()
+        ]);
+    }
+
     /**
      * @param Request $request
      * @param UserPasswordEncoderInterface $userPasswordEncoder
