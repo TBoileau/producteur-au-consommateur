@@ -46,6 +46,12 @@ class Order
     private Customer $customer;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Farm")
+     * @ORM\JoinColumn(onDelete="CASCADE")
+     */
+    private Farm $farm;
+
+    /**
      * @ORM\OneToMany(targetEntity="OrderLine", mappedBy="order", cascade={"persist"})
      */
     private Collection $lines;
@@ -113,6 +119,22 @@ class Order
     public function setCustomer(Customer $customer): void
     {
         $this->customer = $customer;
+    }
+
+    /**
+     * @return Farm
+     */
+    public function getFarm(): Farm
+    {
+        return $this->farm;
+    }
+
+    /**
+     * @param Farm $farm
+     */
+    public function setFarm(Farm $farm): void
+    {
+        $this->farm = $farm;
     }
 
     /**
