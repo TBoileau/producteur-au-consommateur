@@ -1,4 +1,7 @@
 {
+    "beberlei/doctrineextensions": {
+        "version": "v1.2.8"
+    },
     "brick/math": {
         "version": "0.9.1"
     },

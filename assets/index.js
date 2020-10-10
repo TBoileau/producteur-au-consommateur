@@ -21,7 +21,7 @@ function loadMap(center) {
                     title: farm.name,
                 });
                 marker.addListener("click", () => {
-                    window.location.href = "/farm/" + farm.id + "/show";
+                    window.location.href = "/farm/" + farm.slug + "/show";
                 });
             });
         });

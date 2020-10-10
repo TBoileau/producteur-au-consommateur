@@ -29,16 +29,6 @@ class ProductFixtures extends Fixture implements DependentFixtureInterface
 
         /** @var Farm $farm */
         foreach ($farms as $farm) {
-            $position = new Position();
-            $position->setLatitude(43.7195049426910);
-            $position->setLongitude(7.2760391235352);
-            $address = new Address();
-            $address->setAddress("164 Avenue des Arènes de Cimiez");
-            $address->setZipCode("06100");
-            $address->setCity("Nice");
-            $address->setPosition($position);
-            $farm->setAddress($address);
-
             for ($i = 1; $i <= 10; $i++) {
                 $product = new Product();
                 $product->setFarm($farm);

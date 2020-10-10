@@ -7,6 +7,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -22,15 +24,27 @@ class FarmType extends AbstractType
     {
         $builder
             ->add("name", TextType::class, [
-                "label" => "Nom de votre exploitation"
+                "label" => "Nom de votre exploitation",
+                "empty_data" => ""
             ])
-            ->add("image", ImageType::class, [
-                "label" => false
-            ])
-            ->add("address", AddressType::class, ["label" => false])
-            ->add("description", TextareaType::class, [
-                "label" => "Présentation de votre exploitation"
-            ]);
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event): void {
+                $form = $event->getForm();
+                /** @var Farm $farm */
+                $farm = $event->getData();
+
+                if ($farm->getId() !== null) {
+                    $form
+                       ->add("image", ImageType::class, [
+                           "label" => false
+                       ])
+                       ->add("address", AddressType::class, [
+                           "label" => false
+                       ])
+                       ->add("description", TextareaType::class, [
+                           "label" => "Présentation de votre exploitation"
+                       ]);
+                }
+            });
     }
 
     /**

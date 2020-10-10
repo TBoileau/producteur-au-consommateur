@@ -15,14 +15,14 @@ class Position
 {
     /**
      * @ORM\Column(type="decimal", precision=16, scale=13, nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?float $latitude = null;
 
     /**
      * @ORM\Column(type="decimal", precision=16, scale=13, nullable=true)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"edit"})
      * @Groups({"read"})
      */
     private ?float $longitude = null;

@@ -20,4 +20,27 @@ class FarmRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Farm::class);
     }
+
+    public function getNextSlug(string $slug): string
+    {
+        $foundSlugs = $this->createQueryBuilder("f")
+            ->select("f.slug")
+            ->where("REGEXP(f.slug, :pattern) > 0")
+            ->setParameter("pattern", "^" . $slug)
+            ->getQuery()
+            ->getScalarResult();
+
+        if (count($foundSlugs) === 0) {
+            return $slug;
+        }
+
+        $foundSlugs = array_map(function (string $foundSlug) use ($slug) {
+            preg_match("/^" . $slug . "-([0-9]*)$/", $foundSlug, $matches);
+            return !isset($matches[1]) ? 0 : intval($matches[1]);
+        }, array_column($foundSlugs, "slug"));
+
+        rsort($foundSlugs);
+
+        return sprintf("%s-%d", $slug, $foundSlugs[0] + 1);
+    }
 }
