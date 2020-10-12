@@ -18,6 +18,7 @@ class OrderVoter extends Voter
     public const CANCEL = "cancel";
     public const REFUSE = "refuse";
     public const SETTLE = "settle";
+    public const ACCEPT = "accept";
 
     /**
      * @var WorkflowInterface
@@ -38,7 +39,8 @@ class OrderVoter extends Voter
      */
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::CANCEL, self::REFUSE, self::SETTLE]) && $subject instanceof Order;
+        return in_array($attribute, [self::CANCEL, self::REFUSE, self::SETTLE, self::ACCEPT])
+            && $subject instanceof Order;
     }
 
     /**
@@ -58,6 +60,10 @@ class OrderVoter extends Voter
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()
                     && $this->orderStateMachine->can($subject, "refuse");
+            case self::ACCEPT:
+                return $user instanceof Producer
+                    && $user->getFarm() === $subject->getFarm()
+                    && $this->orderStateMachine->can($subject, "accept");
             case self::SETTLE:
                 return $user instanceof Producer
                     && $user->getFarm() === $subject->getFarm()

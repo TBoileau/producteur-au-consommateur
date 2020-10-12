@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-12">
+            {{ form_start(form) }}
+            <div class="card">
+                <div class="card-header d-flex justify-content-between">
+                    <h1 class="mb-0">Accepter une commande</h1>
+                    <button type="button" class="btn-add btn btn-primary">Ajouter un créneau</button>
+                </div>
+                <div class="card-body">
+                    <div data-prototype="{{ form_row(form.slots.vars.prototype)|e("html_attr") }}" data-index="{{ form.slots|length == 0 ? 0 : form.slots|last.vars.name + 1 }}">
+                        {% for slot in form.slots %}
+                            {{ form_row(slot) }}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="card-footer text-right">
+                    <button class="btn btn-primary">Valider</button>
+                </div>
+            </div>
+            {{ form_widget(form._token) }}
+            {{ form_start(form, { render_rest: false }) }}
+        </div>
+    </div>
+{% endblock %}
