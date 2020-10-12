@@ -10,6 +10,7 @@ use App\Entity\Order;
 use App\Entity\OrderLine;
 use App\Entity\Position;
 use App\Entity\Price;
+use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -28,6 +29,28 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
+        $producer = $manager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $products = $manager->getRepository(Product::class)->findBy(["farm" => $producer->getFarm()], [], 0, 5);
+
+        $customer = $manager->getRepository(Customer::class)->findOneBy([]);
+
+        $order = new Order();
+        $order->setCustomer($customer);
+        $order->setFarm($producer->getFarm());
+        foreach ($products as $product) {
+            $line = new OrderLine();
+            $line->setOrder($order);
+            $line->setQuantity(rand(1, 5));
+            $line->setProduct($product);
+            $line->setPrice($product->getPrice());
+            $order->getLines()->add($line);
+        }
+        $order->setState("accepted");
+        $manager->persist($order);
+        $manager->flush();
+
+
         $customers = $manager->getRepository(Customer::class)->findAll();
         $farms = $manager->getRepository(Farm::class)->findAll();
 

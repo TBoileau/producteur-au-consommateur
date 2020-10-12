@@ -27,5 +27,5 @@ framework:
                     from: created
                     to: accepted
                 settle:
-                    from: created
+                    from: accepted
                     to: settled
