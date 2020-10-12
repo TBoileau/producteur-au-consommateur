@@ -2,8 +2,10 @@
 
 namespace App\Tests;
 
+use App\Entity\Customer;
 use App\Entity\Farm;
 use App\Entity\Order;
+use App\Entity\Producer;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 use Generator;
@@ -20,7 +22,7 @@ class OrderTest extends WebTestCase
 {
     use AuthenticationTrait;
 
-    public function testSuccessfulManageOrders(): void
+    public function testSuccessfulRefuseOrder(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");
 
@@ -30,6 +32,28 @@ class OrderTest extends WebTestCase
         $client->request(Request::METHOD_GET, $router->generate("order_manage"));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy([
+            "state" => "created",
+            "farm" => $producer->getFarm()
+        ]);
+
+        $client->request(Request::METHOD_GET, $router->generate("order_refuse", [
+            "id" => $order->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        $this->assertEquals("refused", $order->getState());
     }
 
     public function testSuccessfulCreateOrderAndCancelIt(): void
@@ -56,13 +80,24 @@ class OrderTest extends WebTestCase
 
         $client->followRedirect();
 
-        $order = $entityManager->getRepository(Order::class)->findOneBy(["state" => "created"]);
+        $customer = $entityManager->getRepository(Customer::class)->findOneByEmail("customer@email.com");
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy([
+            "state" => "created",
+            "customer" => $customer
+        ]);
 
         $client->request(Request::METHOD_GET, $router->generate("order_cancel", [
             "id" => $order->getId()
         ]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        $this->assertEquals("canceled", $order->getState());
     }
 
     public function testAccessDeniedCancelOrder(): void

@@ -27,7 +27,9 @@
 
                             </td>
                             <td class="text-center">
-
+                                {% if is_granted("refuse", order) %}
+                                    <a href="{{ path("order_refuse", { id: order.id }) }}" class="btn btn-outline-warning">Refuser</a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

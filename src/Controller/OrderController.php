@@ -9,9 +9,10 @@ use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 /**
  * Class OrderController
@@ -76,15 +77,27 @@ class OrderController extends AbstractController
 
     /**
      * @param Order $order
+     * @param WorkflowInterface $orderStateMachine
      * @return RedirectResponse
      * @Route("/{id}/cancel", name="order_cancel")
      * @IsGranted("cancel", subject="order")
      */
-    public function cancel(Order $order): RedirectResponse
+    public function cancel(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
     {
-        $order->setState("canceled");
-        $order->setCanceledAt(new \DateTimeImmutable());
-        $this->getDoctrine()->getManager()->flush();
+        $orderStateMachine->apply($order, 'cancel');
         return $this->redirectToRoute("order_history");
+    }
+
+    /**
+     * @param Order $order
+     * @param WorkflowInterface $orderStateMachine
+     * @return RedirectResponse
+     * @Route("/{id}/refuse", name="order_refuse")
+     * @IsGranted("refuse", subject="order")
+     */
+    public function refuse(Order $order, WorkflowInterface $orderStateMachine): RedirectResponse
+    {
+        $orderStateMachine->apply($order, 'refuse');
+        return $this->redirectToRoute("order_manage");
     }
 }

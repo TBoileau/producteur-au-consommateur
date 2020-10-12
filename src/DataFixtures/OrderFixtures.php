@@ -29,33 +29,33 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
         $customers = $manager->getRepository(Customer::class)->findAll();
+        $farms = $manager->getRepository(Farm::class)->findAll();
 
         /** @var Customer $customer */
         foreach ($customers as $k => $customer) {
-            $farm = $manager->getRepository(Farm::class)->findOneBy([]);
-
-            $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 0, 5);
-            if ($k % 2 === 0) {
-                $order = new Order();
-                $order->setCustomer($customer);
-                $order->setFarm($farm);
-                $manager->persist($order);
-            }
-
-            foreach ($products as $product) {
+            foreach ($farms as $farm) {
+                $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 0, 5);
                 if ($k % 2 === 0) {
-                    $line = new OrderLine();
-                    $line->setOrder($order);
-                    $line->setQuantity(rand(1, 5));
-                    $line->setProduct($product);
-                    $line->setPrice($product->getPrice());
-                    $order->getLines()->add($line);
-                } else {
-                    $customer->addToCart($product);
+                    $order = new Order();
+                    $order->setCustomer($customer);
+                    $order->setFarm($farm);
+                    $manager->persist($order);
+                }
+
+                foreach ($products as $product) {
+                    if ($k % 2 === 0) {
+                        $line = new OrderLine();
+                        $line->setOrder($order);
+                        $line->setQuantity(rand(1, 5));
+                        $line->setProduct($product);
+                        $line->setPrice($product->getPrice());
+                        $order->getLines()->add($line);
+                    } else {
+                        $customer->addToCart($product);
+                    }
                 }
             }
         }
-
         $manager->flush();
     }
 
