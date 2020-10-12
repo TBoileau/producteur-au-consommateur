@@ -78,4 +78,22 @@ class OrderController extends AbstractController
         $workflow->apply($order, 'cancel');
         return $this->redirectToRoute("order_history");
     }
+
+    /**
+     * @param Order $order
+     * @param Registry $registry
+     * @return RedirectResponse
+     * @Route("/{id}/refuse", name="order_refuse")
+     * @IsGranted("refuse", subject="order")
+     */
+    public function refuse(Order $order, Registry $registry): RedirectResponse
+    {
+        $workflow = $registry->get($order);
+        if (!$workflow->can($order, "refuse")) {
+            $this->addFlash("danger", "Vous ne pouvez pas refuser cette commande.");
+            return $this->redirectToRoute("order_history");
+        }
+        $workflow->apply($order, 'refuse');
+        return $this->redirectToRoute("order_manage");
+    }
 }

@@ -40,13 +40,18 @@ class Order
     private ?\DateTimeImmutable $canceledAt = null;
 
     /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable $refusedAt = null;
+
+    /**
      * @ORM\ManyToOne(targetEntity="Customer")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private Customer $customer;
 
     /**
-     * @ORM\OneToMany(targetEntity="OrderLine", mappedBy="order", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="OrderLine", mappedBy="order", cascade={"persist"}, fetch="EXTRA_LAZY")
      */
     private Collection $lines;
 
@@ -153,5 +158,29 @@ class Order
     public function setCanceledAt(?\DateTimeImmutable $canceledAt): void
     {
         $this->canceledAt = $canceledAt;
+    }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getRefusedAt(): ?\DateTimeImmutable
+    {
+        return $this->refusedAt;
+    }
+
+    /**
+     * @param \DateTimeImmutable|null $refusedAt
+     */
+    public function setRefusedAt(?\DateTimeImmutable $refusedAt): void
+    {
+        $this->refusedAt = $refusedAt;
+    }
+
+    /**
+     * @return Farm
+     */
+    public function getFarm(): Farm
+    {
+        return $this->lines->first()->getFarm();
     }
 }

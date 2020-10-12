@@ -33,8 +33,20 @@ class OrderWorkflow implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'workflow.order.completed.cancel' => 'onCancel'
+            'workflow.order.completed.cancel' => 'onCancel',
+            'workflow.order.completed.refuse' => 'onRefuse'
         ];
+    }
+
+    /**
+     * @param Event $event
+     */
+    public function onRefuse(Event $event): void
+    {
+        /** @var Order $order */
+        $order = $event->getSubject();
+        $order->setRefusedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
     }
 
     /**

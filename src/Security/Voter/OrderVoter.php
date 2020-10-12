@@ -5,6 +5,7 @@ namespace App\Security\Voter;
 use App\Entity\Customer;
 use App\Entity\Producer;
 use App\Entity\Order;
+use Cassandra\Custom;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -15,13 +16,14 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class OrderVoter extends Voter
 {
     public const CANCEL = "cancel";
+    public const REFUSE = "refuse";
 
     /**
      * @inheritDoc
      */
     protected function supports(string $attribute, $subject): bool
     {
-        return in_array($attribute, [self::CANCEL]) && $subject instanceof Order;
+        return in_array($attribute, [self::CANCEL, self::REFUSE]) && $subject instanceof Order;
     }
 
     /**
@@ -31,12 +33,12 @@ class OrderVoter extends Voter
     {
         $user = $token->getUser();
 
-        if (!$user instanceof Customer) {
-            return false;
-        }
-
         /** @var Order $subject */
-
-        return $subject->getState() === "created";
+        switch ($attribute) {
+            case self::CANCEL:
+                return $user instanceof Customer && $user === $subject->getCustomer();
+            case self::REFUSE:
+                return $user instanceof Producer && $user->getFarm() === $subject->getFarm();
+        }
     }
 }
