@@ -65,7 +65,9 @@ class CartTest extends WebTestCase
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
 
-        $product = $entityManager->getRepository(Product::class)->findOneBy([]);
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $product = $entityManager->getRepository(Product::class)->findOneByFarm($producer->getFarm());
 
         $client->request(Request::METHOD_GET, $router->generate("cart_add", [
             "id" => $product->getId()
@@ -75,9 +77,7 @@ class CartTest extends WebTestCase
 
         $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer+1@email.com");
 
-        $farm = $entityManager->getRepository(Farm::class)->findOneByProducer($producer);
-
-        $product = $entityManager->getRepository(Product::class)->findOneByFarm($farm);
+        $product = $entityManager->getRepository(Product::class)->findOneByFarm($producer->getFarm());
 
         $client->request(Request::METHOD_GET, $router->generate("cart_add", [
             "id" => $product->getId()

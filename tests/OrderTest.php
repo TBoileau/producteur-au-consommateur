@@ -22,6 +22,36 @@ class OrderTest extends WebTestCase
 {
     use AuthenticationTrait;
 
+    public function testSuccessfulSettleOrder(): void
+    {
+        $client = static::createAuthenticatedClient("producer@email.com");
+
+        /** @var RouterInterface $router */
+        $router = $client->getContainer()->get("router");
+
+        /** @var EntityManagerInterface $entityManager */
+        $entityManager = $client->getContainer()->get("doctrine.orm.entity_manager");
+
+        $producer = $entityManager->getRepository(Producer::class)->findOneByEmail("producer@email.com");
+
+        $order = $entityManager->getRepository(Order::class)->findOneBy([
+            "state" => "accepted",
+            "farm" => $producer->getFarm()
+        ]);
+
+        $client->request(Request::METHOD_GET, $router->generate("order_settle", [
+            "id" => $order->getId()
+        ]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        $this->assertEquals("settled", $order->getState());
+    }
+
     public function testSuccessfulRefuseOrder(): void
     {
         $client = static::createAuthenticatedClient("producer@email.com");
