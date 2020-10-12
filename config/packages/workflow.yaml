@@ -1,0 +1,31 @@
+framework:
+    workflows:
+        order:
+            type: 'state_machine'
+            audit_trail:
+                enabled: true
+            marking_store:
+                type: 'method'
+                property: 'state'
+            supports:
+                - App\Entity\Order
+            initial_marking: created
+            places:
+                - created
+                - refused
+                - accepted
+                - settled
+                - canceled
+            transitions:
+                cancel:
+                    from: created
+                    to: canceled
+                refuse:
+                    from: created
+                    to: refused
+                accept:
+                    from: created
+                    to: accepted
+                settle:
+                    from: created
+                    to: settled

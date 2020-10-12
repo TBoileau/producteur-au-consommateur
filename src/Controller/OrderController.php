@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Workflow\Registry;
 
 /**
  * Class OrderController
@@ -62,15 +63,19 @@ class OrderController extends AbstractController
 
     /**
      * @param Order $order
+     * @param Registry $registry
      * @return RedirectResponse
      * @Route("/{id}/cancel", name="order_cancel")
      * @IsGranted("cancel", subject="order")
      */
-    public function cancel(Order $order): RedirectResponse
+    public function cancel(Order $order, Registry $registry): RedirectResponse
     {
-        $order->setState("canceled");
-        $order->setCanceledAt(new \DateTimeImmutable());
-        $this->getDoctrine()->getManager()->flush();
+        $workflow = $registry->get($order);
+        if (!$workflow->can($order, "cancel")) {
+            $this->addFlash("danger", "Vous ne pouvez pas annuler cette commande.");
+            return $this->redirectToRoute("order_history");
+        }
+        $workflow->apply($order, 'cancel');
         return $this->redirectToRoute("order_history");
     }
 }

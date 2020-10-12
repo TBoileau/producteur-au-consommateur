@@ -51,6 +51,12 @@ class OrderTest extends WebTestCase
         ]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+
+        $entityManager->clear();
+
+        $order = $entityManager->getRepository(Order::class)->find($order->getId());
+
+        $this->assertEquals("canceled", $order->getState());
     }
 
     public function testAccessDeniedCancelOrder(): void
