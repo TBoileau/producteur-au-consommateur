@@ -27,6 +27,9 @@
 
                             </td>
                             <td class="text-center">
+                                {% if is_granted("accept", order) %}
+                                    <a href="{{ path("order_accept", { id: order.id }) }}" class="btn btn-outline-successs">Accepter</a>
+                                {% endif %}
                                 {% if is_granted("refuse", order) %}
                                     <a href="{{ path("order_refuse", { id: order.id }) }}" class="btn btn-outline-warning">Refuser</a>
                                 {% endif %}

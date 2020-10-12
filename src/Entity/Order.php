@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Order
@@ -47,6 +48,11 @@ class Order
     /**
      * @ORM\Column(type="datetime_immutable", nullable=true)
      */
+    private ?\DateTimeImmutable $acceptedAt = null;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
     private ?\DateTimeImmutable $settledAt = null;
 
     /**
@@ -56,7 +62,7 @@ class Order
     private Customer $customer;
 
     /**
-     * @ORM\OneToMany(targetEntity="OrderLine", mappedBy="order", cascade={"persist"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="OrderLine", mappedBy="order", cascade={"persist"})
      */
     private Collection $lines;
 
@@ -67,12 +73,25 @@ class Order
     private Farm $farm;
 
     /**
+     * @ORM\OneToMany(targetEntity="Slot", mappedBy="order", cascade={"persist"}, orphanRemoval=true)
+     * @Assert\Count(min=1)
+     */
+    private Collection $slots;
+
+    /**
+     * @var Slot|null
+     * @ORM\OneToOne(targetEntity="Slot")
+     */
+    private ?Slot $chosenSlot;
+
+    /**
      * Order constructor.
      */
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->lines = new ArrayCollection();
+        $this->slots = new ArrayCollection();
     }
 
     /**
@@ -204,6 +223,14 @@ class Order
     }
 
     /**
+     * @param \DateTimeImmutable|null $settledAt
+     */
+    public function setSettledAt(?\DateTimeImmutable $settledAt): void
+    {
+        $this->settledAt = $settledAt;
+    }
+
+    /**
      * @return \DateTimeImmutable|null
      */
     public function getSettledAt(): ?\DateTimeImmutable
@@ -212,10 +239,53 @@ class Order
     }
 
     /**
-     * @param \DateTimeImmutable|null $settledAt
+     * @return ArrayCollection|Collection
      */
-    public function setSettledAt(?\DateTimeImmutable $settledAt): void
+    public function getSlots()
     {
-        $this->settledAt = $settledAt;
+        return $this->slots;
+    }
+
+    public function addSlot(Slot $slot): void
+    {
+        $slot->setOrder($this);
+        $this->slots->add($slot);
+    }
+
+    public function removeSlot(Slot $slot): void
+    {
+        $this->slots->removeElement($slot);
+    }
+
+    /**
+     * @return Slot|null
+     */
+    public function getChosenSlot(): ?Slot
+    {
+        return $this->chosenSlot;
+    }
+
+    /**
+     * @param Slot|null $chosenSlot
+     */
+    public function setChosenSlot(?Slot $chosenSlot): void
+    {
+        $this->chosenSlot = $chosenSlot;
+    }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getAcceptedAt(): ?\DateTimeImmutable
+    {
+        return $this->acceptedAt;
+    }
+
+    /**
+     * @param \DateTimeImmutable|null $acceptedAt
+     */
+    public function setAcceptedAt(?\DateTimeImmutable $acceptedAt): void
+    {
+        $this->acceptedAt = $acceptedAt;
     }
 }
