@@ -121,7 +121,8 @@ class HandlerMaker extends AbstractMaker
 
         $generator->generateClass(
             $handlerDetails->getFullName(),
-            __DIR__ . '/../Resources/skeleton/handler.tpl.php', [
+            __DIR__ . '/../Resources/skeleton/handler.tpl.php',
+            [
                 'form_type_full_class_name' => $formType,
                 'form_class_name' => $input->getArgument("form-type-class")
             ]
