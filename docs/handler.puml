@@ -1,0 +1,33 @@
+@startuml
+
+interface HandlerFactoryInterface {
+	{method} createHandler(string: $handler, mixed: $data): HandlerInterface
+}
+
+class HandlerFactory {
+	{method} createHandler(string: $handler, mixed: $data): HandlerInterface
+}
+
+HandlerFactoryInterface <|-- HandlerFactory
+
+interface HandlerInterface {
+	{method} handle(Request: $request, mixed: $data): bool;
+	{method} process(mixed: $data): void;
+	{method} configure(OptionsResolver: $resolver): void;
+	{method} createView(): FormView;
+}
+
+class AbstractHandler {
+	{method} handle(Request: $request, mixed: $data): bool;
+	{method} createView(): FormView;
+}
+
+class CreateProductHandler {
+	{method} process(mixed: $data): void;
+	{method} configure(OptionsResolver: $resolver): void;
+}
+
+HandlerInterface <|-- AbstractHandler
+AbstractHandler <|-- CreateProductHandler
+
+@enduml
