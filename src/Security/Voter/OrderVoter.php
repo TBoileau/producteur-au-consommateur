@@ -70,6 +70,6 @@ class OrderVoter extends Voter
                     && $this->orderStateMachine->can($subject, "settle");
         }
 
-        throw new \LogicException("Vous n'êtes pas censé arriver ici.");
+        throw new \LogicException("Vous n'êtes pas censé arriver ici."); // @codeCoverageIgnore
     }
 }

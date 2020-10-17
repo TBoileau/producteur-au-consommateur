@@ -6,6 +6,9 @@ use App\Entity\CartItem;
 use App\Entity\Order;
 use App\Entity\OrderLine;
 use App\Form\AcceptOrderType;
+use App\Handler\AcceptOrderHandler;
+use App\Handler\UpdateFarmHandler;
+use App\HandlerFactory\HandlerFactoryInterface;
 use App\Repository\OrderRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -119,22 +122,21 @@ class OrderController extends AbstractController
     /**
      * @param Request $request
      * @param Order $order
-     * @param WorkflowInterface $orderStateMachine
+     * @param HandlerFactoryInterface $handlerFactory
      * @return RedirectResponse
      * @Route("/{id}/accept", name="order_accept")
      * @IsGranted("accept", subject="order")
      */
-    public function accept(Request $request, Order $order, WorkflowInterface $orderStateMachine): Response
+    public function accept(Request $request, Order $order, HandlerFactoryInterface $handlerFactory): Response
     {
-        $form = $this->createForm(AcceptOrderType::class, $order)->handleRequest($request);
+        $handler = $handlerFactory->createHandler(AcceptOrderHandler::class);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $orderStateMachine->apply($order, 'accept');
+        if ($handler->handle($request, $order)) {
             return $this->redirectToRoute("order_manage");
         }
 
         return $this->render("ui/order/accept.html.twig", [
-            "form" => $form->createView()
+            "form" => $handler->createView()
         ]);
     }
 }

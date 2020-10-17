@@ -58,24 +58,19 @@ class OrderFixtures extends Fixture implements DependentFixtureInterface
         foreach ($customers as $k => $customer) {
             foreach ($farms as $farm) {
                 $products = $manager->getRepository(Product::class)->findBy(["farm" => $farm], [], 0, 5);
-                if ($k % 2 === 0) {
-                    $order = new Order();
-                    $order->setCustomer($customer);
-                    $order->setFarm($farm);
-                    $manager->persist($order);
-                }
+
+                $order = new Order();
+                $order->setCustomer($customer);
+                $order->setFarm($farm);
+                $manager->persist($order);
 
                 foreach ($products as $product) {
-                    if ($k % 2 === 0) {
-                        $line = new OrderLine();
-                        $line->setOrder($order);
-                        $line->setQuantity(rand(1, 5));
-                        $line->setProduct($product);
-                        $line->setPrice($product->getPrice());
-                        $order->getLines()->add($line);
-                    } else {
-                        $customer->addToCart($product);
-                    }
+                    $line = new OrderLine();
+                    $line->setOrder($order);
+                    $line->setQuantity(rand(1, 5));
+                    $line->setProduct($product);
+                    $line->setPrice($product->getPrice());
+                    $order->getLines()->add($line);
                 }
             }
         }

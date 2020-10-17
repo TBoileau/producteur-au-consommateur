@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CreateProductHandler
+ * Class UpdateProductHandler
  * @package App\Handler
  */
-class CreateProductHandler extends AbstractHandler
+class UpdateProductHandler extends AbstractHandler
 {
     /**
      * @var EntityManagerInterface
@@ -25,7 +25,7 @@ class CreateProductHandler extends AbstractHandler
     private FlashBagInterface $flashBag;
 
     /**
-     * CreateProductHandler constructor.
+     * UpdateProductHandler constructor.
      * @param EntityManagerInterface $entityManager
      * @param FlashBagInterface $flashBag
      */
@@ -40,11 +40,10 @@ class CreateProductHandler extends AbstractHandler
      */
     protected function process($data, array $options): void
     {
-        $this->entityManager->persist($data);
         $this->entityManager->flush();
         $this->flashBag->add(
             "success",
-            "Votre produit ont été créé avec succès."
+            "Votre produit ont été modifié avec succès."
         );
     }
 

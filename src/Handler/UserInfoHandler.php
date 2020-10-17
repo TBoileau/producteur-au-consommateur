@@ -2,17 +2,17 @@
 
 namespace App\Handler;
 
-use App\Form\ProductType;
+use App\Form\UserInfoType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CreateProductHandler
+ * Class UserInfoHandler
  * @package App\Handler
  */
-class CreateProductHandler extends AbstractHandler
+class UserInfoHandler extends AbstractHandler
 {
     /**
      * @var EntityManagerInterface
@@ -25,7 +25,7 @@ class CreateProductHandler extends AbstractHandler
     private FlashBagInterface $flashBag;
 
     /**
-     * CreateProductHandler constructor.
+     * UserInfoHandler constructor.
      * @param EntityManagerInterface $entityManager
      * @param FlashBagInterface $flashBag
      */
@@ -40,12 +40,8 @@ class CreateProductHandler extends AbstractHandler
      */
     protected function process($data, array $options): void
     {
-        $this->entityManager->persist($data);
         $this->entityManager->flush();
-        $this->flashBag->add(
-            "success",
-            "Votre produit ont été créé avec succès."
-        );
+        $this->flashBag->add("success", "Vos informations personnelles a été modifiées avec succès.");
     }
 
     /**
@@ -53,6 +49,6 @@ class CreateProductHandler extends AbstractHandler
      */
     protected function configure(OptionsResolver $resolver): void
     {
-        $resolver->setDefault("form_type", ProductType::class);
+        $resolver->setDefault("form_type", UserInfoType::class);
     }
 }

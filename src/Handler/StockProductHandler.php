@@ -2,22 +2,22 @@
 
 namespace App\Handler;
 
-use App\Form\ProductType;
+use App\Form\StockType;
 use App\HandlerFactory\AbstractHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * Class CreateProductHandler
+ * Class StockProductHandler
  * @package App\Handler
  */
-class CreateProductHandler extends AbstractHandler
+class StockProductHandler extends AbstractHandler
 {
     /**
      * @var EntityManagerInterface
      */
-    private EntityManagerInterface $entityManager;
+    private EntityManagerInterface $entityManage;
 
     /**
      * @var FlashBagInterface
@@ -25,13 +25,13 @@ class CreateProductHandler extends AbstractHandler
     private FlashBagInterface $flashBag;
 
     /**
-     * CreateProductHandler constructor.
-     * @param EntityManagerInterface $entityManager
+     * StockProductHandler constructor.
+     * @param EntityManagerInterface $entityManage
      * @param FlashBagInterface $flashBag
      */
-    public function __construct(EntityManagerInterface $entityManager, FlashBagInterface $flashBag)
+    public function __construct(EntityManagerInterface $entityManage, FlashBagInterface $flashBag)
     {
-        $this->entityManager = $entityManager;
+        $this->entityManage = $entityManage;
         $this->flashBag = $flashBag;
     }
 
@@ -40,11 +40,10 @@ class CreateProductHandler extends AbstractHandler
      */
     protected function process($data, array $options): void
     {
-        $this->entityManager->persist($data);
-        $this->entityManager->flush();
+        $this->entityManage->flush();
         $this->flashBag->add(
             "success",
-            "Votre produit ont été créé avec succès."
+            "le stock de votre produit ont été modifié avec succès."
         );
     }
 
@@ -53,6 +52,6 @@ class CreateProductHandler extends AbstractHandler
      */
     protected function configure(OptionsResolver $resolver): void
     {
-        $resolver->setDefault("form_type", ProductType::class);
+        $resolver->setDefault("form_type", StockType::class);
     }
 }
