@@ -9,6 +9,8 @@
       <directory>src/DataFixtures</directory>
       <file>src/Kernel.php</file>
       <file>src/.preload.php</file>
+      <directory>src/Resources</directory>
+      <directory>src/Maker</directory>
     </exclude>
     <report>
       <clover outputFile="build/logs/clover.xml"/>
