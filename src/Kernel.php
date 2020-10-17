@@ -3,6 +3,7 @@
 namespace App;
 
 use App\DependencyInjection\Compiler\HandlerPass;
+use App\DependencyInjection\Compiler\MakerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -44,5 +45,6 @@ class Kernel extends BaseKernel
     protected function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new HandlerPass());
+        $container->addCompilerPass(new MakerPass());
     }
 }
