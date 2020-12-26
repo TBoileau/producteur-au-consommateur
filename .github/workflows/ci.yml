@@ -1,38 +1,67 @@
-name: Tests
+name: CI process for Symfony 5
 on: [push]
+env:
+  ES_HTTP_PORT: 9209
 jobs:
-  functional-tests:
-    name: Functional tests
-    runs-on: ${{ matrix.operating-system }}
-    strategy:
-      fail-fast: false
-      matrix:
-        operating-system: [ubuntu-latest]
-        php-versions: ['7.4']
-        node-version: ['14.7']
+  symfony:
+    name: Symfony 5.2 (PHP ${{ matrix.php-versions }})
+    # https://hub.docker.com/_/ubuntu/
+    runs-on: ubuntu-18.04
     services:
+      # https://docs.docker.com/samples/library/mysql/
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7
         env:
-          MYSQL_ROOT_PASSWORD: 'password'
+          MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      # https://hub.docker.com/_/elasticsearch/
+      elasticsearch:
+        image: elasticsearch:6.8.10
+        ports:
+          - 9209:9200
+        options: -e="discovery.type=single-node" --health-cmd="curl http://localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=10
+    strategy:
+      fail-fast: true
+      matrix:
+        php-versions: ['7.4', '8.0']
     steps:
+      # https://github.com/actions/checkout (official)
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup PHP, with composer and extensions
+
+      # https://github.com/shivammathur/setup-php (community)
+      - name: Setup PHP, extensions and composer with shivammathur/setup-php
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          extensions: mbstring, xml, ctype, iconv, intl
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
           coverage: xdebug
+        env:
+          update: true
+
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
+      - name: Check PHP Version
+        run: php -v
+
+      # —— Composer 🧙‍️ —————————————————————————————————————————————————————————
+
       - name: Get composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
       - name: Cache composer dependencies
         uses: actions/cache@v1
         with:
@@ -45,13 +74,43 @@ jobs:
       - name: Install NPM dependencies
         run: |
           npm install
-          GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} npm run dev
+          npm run dev
+
+      # —— Symfony 🎵 ——————————————————————————————————————————————————————————
+      - name: Check Symfony requirements
+        run: vendor/bin/requirements-checker
+
+      - name: Check the Symfony console
+        run: |
+          bin/console -V
+          bin/console strangebuzz:version
+
+      ## —— Coding standards ✨ ————————————————————————————————————————————————
+      # Can't handle PHP8 for now
+      - name: Coding standards checks (php_codesniffer + php-cs-fixer)
+        run: make cs
+        if: matrix.php-versions == '7.4'
+
+      ## —— Static analysis ✨ —————————————————————————————————————————————————
+      - name: Static analysis of PHP code (PHPStan)
+        run: make static-analysis
+        if: matrix.php-versions == '7.4'
+
+        ## —— Prepare database  —————————————————————————————————————————————————
+
       - name: Prepare database
         run: |
           php bin/console doctrine:database:create
           php bin/console doctrine:schema:update --force
           php bin/console doctrine:fixtures:load -n
+      ## —— Tests ✅ ———————————————————————————————————————————————————————————
+      - name: Load Doctrine fixtures and populate the Elasticsearch indexes
+        run: |
+          make load-fixtures
+          make populate
+
       - name: Run functional tests
-        run: GOOGLE_MAP_API_KEY=${{ secrets.GOOGLE_MAP_API_KEY }} php vendor/bin/simple-phpunit
+        run: php vendor/bin/simple-phpunit
+
       - name: Analyze coding style
         run: php vendor/bin/phpcs
